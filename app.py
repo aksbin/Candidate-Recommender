@@ -4,6 +4,7 @@ from utils.text_extraction import extract_text
 from utils.embeddings import get_embeddings
 from utils.similarity import get_top_matches
 
+
 # --- Page config ---
 st.set_page_config(
     page_title="Candidate Recommender",
@@ -82,7 +83,7 @@ if run:
                         "text": txt
                     })
                 else:
-                    st.warning(f"No text founf in {f.name}.")
+                    st.warning(f"No text found in {f.name}.")
             except ValueError as e:
                 st.warning(str(e))
 
@@ -110,5 +111,14 @@ if run:
             matches = get_top_matches(job_emb, resume_embs, resumes, top_n=top_n)
 
             # Display results
-            st.markdown('### 🔝 Top Matches')
-            st.table(matches)
+            # st.markdown('### 🔝 Top Matches')
+            # st.table(matches)
+
+            # After: matches = get_top_matches(job_emb, resume_embs, resumes, top_n)
+            st.markdown("## Top Matches (min-max normalized per job)")
+            _display = [
+                {"Candidate": m["id"], "Score (0-100)": round(m["score"] * 100, 1)}
+                for m in matches
+            ]
+            st.table(_display)
+
