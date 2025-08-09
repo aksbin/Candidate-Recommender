@@ -3,22 +3,22 @@ from typing import Optional
 from dotenv import load_dotenv
 import openai
 
-# Load environment variables (OPENAI_API_KEY)
+# Load environment variables 
 load_dotenv()
 api_key = os.getenv("OPENAI_API_KEY")
 if not api_key:
     raise ValueError("OPENAI_API_KEY not set in environment or .env file")
+
+# Configure OpenAI client
 openai.api_key = api_key
 
+# Generate a concise, evidence based fit summary
+def summarize_fit(job_description: str, resume_text: str, model: str = "gpt-4o-mini", max_chars: int = 40000) -> str:
 
-def summarize_fit(job_description: str, resume_text: str, model: str = "gpt-4o-mini", max_chars: int = 6000) -> str:
-    """
-    Generate a concise, evidence-based summary of why the candidate fits the role.
-    - Clips resume text to avoid excessive token usage.
-    - Uses a low temperature for consistent, factual summaries.
-    """
+    # Clip resume to control token usage
     resume_clip = resume_text[:max_chars]
 
+    # Build chat messages 
     messages = [
         {
             "role": "system",
@@ -38,10 +38,13 @@ def summarize_fit(job_description: str, resume_text: str, model: str = "gpt-4o-m
         },
     ]
 
+    # Call chat completions with low temperature for consistent, factual output
     resp = openai.chat.completions.create(
         model=model,
         messages=messages,
         temperature=0.2,
         max_tokens=250,
     )
+
+    # Return trimmed text content
     return resp.choices[0].message.content.strip()
